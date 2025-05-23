@@ -7,9 +7,10 @@ from rank_bm25 import BM25Okapi
 from tqdm import tqdm
 import numpy as np
 import openai
+import re
 
 # ========== CONFIGURATION ==========
-openai.api_key = "your-openai-api-key"
+openai.api_key = "api-key"
 DATA_DIR = "./acord_data"
 TOP_K = 5  # Number of top clauses to rerank
 USE_BM25 = False  # Set to True if you want lexical retrieval as well
@@ -17,12 +18,11 @@ USE_BM25 = False  # Set to True if you want lexical retrieval as well
 # ========== LOAD DATA ==========
 def load_jsonl(filepath):
     with jsonlines.open(filepath) as reader:
-        return {item['id']: item['text'] for item in reader}
+        return {item['_id']: item['text'] for item in reader}
 
 corpus = load_jsonl(os.path.join(DATA_DIR, "corpus.jsonl"))
 queries = load_jsonl(os.path.join(DATA_DIR, "queries.jsonl"))
-qrels_df = pd.read_csv(os.path.join(DATA_DIR, "qrels.tsv"), sep='\t', names=["query_id", "corpus_id", "score"])
-
+qrels_df = pd.read_csv(os.path.join(DATA_DIR, "qrels/test.tsv"), sep='\\t', names=["query_id", "corpus_id", "score"])
 # ========== EMBEDDINGS ==========
 model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
 clause_ids = list(corpus.keys())
@@ -35,29 +35,41 @@ id_to_index = {cid: idx for idx, cid in enumerate(clause_ids)}
 def gpt4o_score(query, clause):
     prompt = f"Query: {query}\nClause: {clause}\nRate the relevance from 1 to 5:"
     try:
-        response = openai.ChatCompletion.create(
-            model="gpt-4o",
+        response = openai.chat.completions.create(
+            model="gpt-4o-mini",
             messages=[
                 {"role": "system", "content": "You are a legal contract analysis assistant."},
                 {"role": "user", "content": prompt}
             ],
             temperature=0.0
         )
-        return int(response.choices[0].message.content.strip())
+        # return int(response.choices[0].message.content.strip())
+        content = response.choices[0].message.content.strip()
+        match = re.search(r"\b[1-5]\b", content)
+        if match:
+            return int(match.group(0))
+        else:
+            print(f"[WARNING] Could not parse score from response: {content}")
+            return 1  # fallback
     except Exception as e:
         print(f"Error scoring with GPT-4o: {e}")
         return 1  # fallback score
 
 # ========== METRICS ==========
 def precision_at_k(preds, truth, k, star_thresh):
-    relevant = set(cid for cid, score in truth if score >= star_thresh)
+    relevant = set(cid for cid, score in truth if float(score) >= star_thresh)
     top_k = preds[:k]
     return sum(1 for cid in top_k if cid in relevant) / k
 
 def ndcg_at_k(preds, truth, k):
-    id_to_relevance = {cid: score for cid, score in truth}
-    dcg = sum((2**id_to_relevance.get(cid, 0) - 1) / np.log2(idx + 2) for idx, cid in enumerate(preds[:k]))
-    ideal = sorted([score for _, score in truth], reverse=True)[:k]
+    # id_to_relevance = {cid: score for cid, score in truth}
+    # dcg = sum((2**id_to_relevance.get(cid, 0) - 1) / np.log2(idx + 2) for idx, cid in enumerate(preds[:k]))
+    # ideal = sorted([score for _, score in truth], reverse=True)[:k]
+    # idcg = sum((2**score - 1) / np.log2(idx + 2) for idx, score in enumerate(ideal))
+    # return dcg / idcg if idcg > 0 else 0
+    id_to_relevance = {cid: float(score) for cid, score in truth}
+    dcg = sum((2**id_to_relevance.get(cid, 0.0) - 1) / np.log2(idx + 2) for idx, cid in enumerate(preds[:k]))
+    ideal = sorted([float(score) for _, score in truth], reverse=True)[:k]
     idcg = sum((2**score - 1) / np.log2(idx + 2) for idx, score in enumerate(ideal))
     return dcg / idcg if idcg > 0 else 0
 
