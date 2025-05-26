@@ -23,7 +23,7 @@ MAX_BATCH_TOKENS = 200_000
 # Maximum tokens per document (model context limit ~8191)
 MAX_DOC_TOKENS = 8191
 # Set your API key via environment variable
-
+openai.api_key = os.getenv("OPENAI_API_KEY", "")
 
 # -----------------------------
 # Functions
