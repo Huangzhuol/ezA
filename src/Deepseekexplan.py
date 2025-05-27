@@ -141,7 +141,7 @@ for qid, query in tqdm(queries.items(), desc="Generating Explanations"):
             "score": score_deepseek
         })
 
-    break #to do one query
+    # break #to do one query
 
 # ========== OUTPUT ==========
 pd.DataFrame(explanations_gpt).to_csv("Dgpt.csv", index=False)
