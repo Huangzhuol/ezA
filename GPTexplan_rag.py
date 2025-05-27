@@ -6,10 +6,11 @@ from tqdm import tqdm
 import numpy as np
 import openai
 import re
+from rag_retrieve import ragFunc
 from openai import OpenAI
 # ========== CONFIGURATION ==========
-openai.api_key = "openai_key" # Replace with your OpenAI API key
-Deepseek_key="deepseek_key" # Replace with your DeepSeek key
+openai.api_key = "" # Replace with your OpenAI API key
+Deepseek_key="" # Replace with your DeepSeek key
 DATA_DIR = "./acord_data"
 TOP_K = 5
 
@@ -30,10 +31,17 @@ clause_embeddings = model.encode(clause_texts, convert_to_tensor=True)
 
 # ========== GPT-4o UTILS ==========
 def generate_explanation_gpt4o(query, clause):
+    rag = ragFunc(    corpus_path="maud_corpus.jsonl",
+    embedding_path="embeddings.json",
+    query=clause,
+    top_k=2)
+    
     prompt = f"""
 You are a legal contract assistant.
 
 Query: {query}
+
+External information(might be helpful): rag
 
 Clause:
 \"\"\"{clause}\"\"\"
