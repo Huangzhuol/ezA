@@ -8,16 +8,9 @@ import openai
 import re
 from rag_retrieve import ragFunc
 from openai import OpenAI
-# ========== CONFIGURATION ==========
-<<<<<<< HEAD:GPTexplan_rag.py
-openai.api_key = "" # Replace with your OpenAI API key
-Deepseek_key="" # Replace with your DeepSeek key
-DATA_DIR = "./acord_data"
-=======
 openai.api_key = "openai_key" # Replace with your OpenAI API key
 Deepseek_key="deepseek_key" # Replace with your DeepSeek key
 DATA_DIR = "./data"
->>>>>>> ec3ebfd4e45ccb8017bb9658f018ac860d12e838:src/GPTexplan.py
 TOP_K = 5
 
 

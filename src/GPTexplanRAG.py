@@ -31,8 +31,8 @@ clause_embeddings = model.encode(clause_texts, convert_to_tensor=True)
 
 # ========== GPT-4o UTILS ==========
 def generate_explanation_gpt4o(query, clause):
-    rag = ragFunc(    corpus_path="maud_corpus.jsonl",
-    embedding_path="embeddings.json",
+    rag = ragFunc( corpus_path="./data/maud_corpus.jsonl",
+    embedding_path="./data/embeddings.json",
     query=clause,
     top_k=2)
     
