@@ -11,7 +11,7 @@ from openai import OpenAI
 # ========== CONFIGURATION ==========
 openai.api_key = "" # Replace with your OpenAI API key
 Deepseek_key="" # Replace with your DeepSeek key
-DATA_DIR = "./acord_data"
+DATA_DIR = "./data"
 TOP_K = 5
 
 
@@ -151,8 +151,8 @@ for qid, query in tqdm(queries.items(), desc="Generating Explanations"):
     break #to do one query
 
 # ========== OUTPUT ==========
-pd.DataFrame(explanations_gpt).to_csv("acord_explanations_gpt.csv", index=False)
+pd.DataFrame(explanations_gpt).to_csv("Cgpt_RAG.csv", index=False)
 print("Saved explanations to acord_explanations_gpt.csv")
 
-pd.DataFrame(explanations_deepseek).to_csv("acord_explanations_deepseek.csv", index=False)
+pd.DataFrame(explanations_deepseek).to_csv("CdeepseekRAG.csv", index=False)
 print("Saved explanations to acord_explanations_deepseek.csv")
