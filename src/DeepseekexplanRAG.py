@@ -6,12 +6,11 @@ from tqdm import tqdm
 import numpy as np
 import openai
 import re
-from rag_retrieve import ragFunc
 from openai import OpenAI
 # ========== CONFIGURATION ==========
-openai.api_key = "" # Replace with your OpenAI API key
-Deepseek_key="" # Replace with your DeepSeek key
-DATA_DIR = "./acord_data"
+openai.api_key = "openai_key" # Replace with your OpenAI API key
+Deepseek_key="deepseek_key" # Replace with your DeepSeek key
+DATA_DIR = "./data"
 TOP_K = 5
 
 
@@ -30,18 +29,11 @@ clause_texts = list(corpus.values())
 clause_embeddings = model.encode(clause_texts, convert_to_tensor=True)
 
 # ========== GPT-4o UTILS ==========
-def generate_explanation_gpt4o(query, clause):
-    rag = ragFunc(    corpus_path="maud_corpus.jsonl",
-    embedding_path="embeddings.json",
-    query=clause,
-    top_k=2)
-    
+def generate_explanation_deepseek(query, clause):
     prompt = f"""
 You are a legal contract assistant.
 
 Query: {query}
-
-External information(might be helpful): {rag}
 
 Clause:
 \"\"\"{clause}\"\"\"
@@ -49,8 +41,9 @@ Clause:
 Please explain how this clause is relevant to the query.
 """
     try:
-        response = openai.chat.completions.create(
-            model="gpt-4o-mini",
+        client = OpenAI(api_key=Deepseek_key, base_url="https://api.deepseek.com")
+        response = client.chat.completions.create(
+            model="deepseek-chat",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.0
         )
@@ -126,7 +119,7 @@ for qid, query in tqdm(queries.items(), desc="Generating Explanations"):
 
     for cid in top_clause_ids:
         clause = corpus[cid]
-        explanation = generate_explanation_gpt4o(query, clause)
+        explanation = generate_explanation_deepseek(query, clause)
 
         score_gpt = gpt4omini_relevance_score(query, clause, explanation)
 
