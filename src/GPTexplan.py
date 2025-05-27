@@ -6,7 +6,7 @@ from tqdm import tqdm
 import numpy as np
 import openai
 import re
-from rag_retrieve import ragFunc
+from RAG_Retrieval import ragFunc
 from openai import OpenAI
 openai.api_key = "openai_key" # Replace with your OpenAI API key
 Deepseek_key="deepseek_key" # Replace with your DeepSeek key
@@ -147,7 +147,7 @@ for qid, query in tqdm(queries.items(), desc="Generating Explanations"):
             "score": score_deepseek
         })
 
-    break #to do one query
+    # break #to do one query
 
 # ========== OUTPUT ==========
 pd.DataFrame(explanations_gpt).to_csv("acord_explanations_gpt.csv", index=False)

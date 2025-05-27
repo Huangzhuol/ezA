@@ -6,7 +6,7 @@ from tqdm import tqdm
 import numpy as np
 import openai
 import re
-from rag_retrieve import ragFunc
+from RAG_Retrieval import ragFunc
 from openai import OpenAI
 # ========== CONFIGURATION ==========
 openai.api_key = "" # Replace with your OpenAI API key

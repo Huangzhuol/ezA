@@ -7,7 +7,7 @@ import numpy as np
 import openai
 import re
 from openai import OpenAI
-from rag_retrieve import ragFunc
+from RAG_Retrieval import ragFunc
 # ========== CONFIGURATION ==========
 openai.api_key = "openai_key" # Replace with your OpenAI API key
 Deepseek_key="deepseek_key" # Replace with your DeepSeek key
