@@ -1,0 +1,8 @@
+openai
+jsonlines
+pandas
+torch
+entence-transformers
+seaborn
+matplotlib
+tqdm

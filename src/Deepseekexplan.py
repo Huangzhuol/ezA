@@ -8,8 +8,8 @@ import openai
 import re
 from openai import OpenAI
 # ========== CONFIGURATION ==========
-openai.api_key = "openai_key" # Replace with your OpenAI API key
-Deepseek_key="deepseek_key" # Replace with your DeepSeek key
+openai.api_key = "open_key" # Replace with your OpenAI API key
+Deepseek_key="deep_key" # Replace with your DeepSeek key
 DATA_DIR = "./data"
 TOP_K = 5
 

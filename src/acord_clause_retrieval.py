@@ -12,8 +12,8 @@ import re
 # ========== CONFIGURATION ==========
 openai.api_key = "api-key"
 DATA_DIR = "./acord_data"
-TOP_K = 5  # Number of top clauses to rerank
-USE_BM25 = False  # Set to True if you want lexical retrieval as well
+TOP_K = 5  
+USE_BM25 = False  
 
 # ========== LOAD DATA ==========
 def load_jsonl(filepath):
@@ -62,11 +62,6 @@ def precision_at_k(preds, truth, k, star_thresh):
     return sum(1 for cid in top_k if cid in relevant) / k
 
 def ndcg_at_k(preds, truth, k):
-    # id_to_relevance = {cid: score for cid, score in truth}
-    # dcg = sum((2**id_to_relevance.get(cid, 0) - 1) / np.log2(idx + 2) for idx, cid in enumerate(preds[:k]))
-    # ideal = sorted([score for _, score in truth], reverse=True)[:k]
-    # idcg = sum((2**score - 1) / np.log2(idx + 2) for idx, score in enumerate(ideal))
-    # return dcg / idcg if idcg > 0 else 0
     id_to_relevance = {cid: float(score) for cid, score in truth}
     dcg = sum((2**id_to_relevance.get(cid, 0.0) - 1) / np.log2(idx + 2) for idx, cid in enumerate(preds[:k]))
     ideal = sorted([float(score) for _, score in truth], reverse=True)[:k]
