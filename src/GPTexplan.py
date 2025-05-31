@@ -150,8 +150,8 @@ for qid, query in tqdm(queries.items(), desc="Generating Explanations"):
     # break #to do one query
 
 # ========== OUTPUT ==========
-pd.DataFrame(explanations_gpt).to_csv("Cgpt.csv", index=False)
+pd.DataFrame(explanations_gpt).to_csv("./result/model_data/Cgpt.csv", index=False)
 print("Saved explanations to acord_explanations_gpt.csv")
 
-pd.DataFrame(explanations_deepseek).to_csv("Cdeepseek.csv", index=False)
+pd.DataFrame(explanations_deepseek).to_csv("./result/model_data/Cdeepseek.csv", index=False)
 print("Saved explanations to acord_explanations_deepseek.csv")
