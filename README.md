@@ -31,7 +31,7 @@ To generate separate CSV files by running the following code, each file will pro
 python Deepseekexplan.py/DeepseekexplanRAG.py/GPTexplanRAG.py/GPTexplanRAG.py
 ```
 
-Run the analysis function to obtain the distribution graph, as well as the average value, median, mode, standard deviation, and the frequency of scores greater than 4.
+Run the analysis function to obtain the distribution graph, as well as the average value, median, mode, standard deviation, and the frequency of scores greater than 4. And the pie chart clearly represents the difference between the presence and absence of the RAG.
 ```
-python analyze.py
+python analyze.py/analyze_pie_chart.py
 ```
