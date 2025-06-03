@@ -13,15 +13,11 @@ import json
 import jsonlines
 import openai
 
-# -----------------------------
-# Configuration
-# -----------------------------
+
 MODEL_NAME = "text-embedding-ada-002"
 BATCH_SIZE = 500
 
-# -----------------------------
-# Functions
-# -----------------------------
+
 def load_corpus(jsonl_path):
     """
     Load a JSONL file and return list of dicts with keys '_id' and 'text'.
@@ -44,40 +40,34 @@ def embed_texts(texts):
     )
     return resp['data']
 
-# -----------------------------
-# Main Routine
-# -----------------------------
+
 
 def main(corpus_path, output_path):
-    # Ensure API key is set
-    api_key = "T3BlbkFJ9uNLRH5xWRjV52R8pdQ4i9h8k0R9IFb3AY0ylWBazrlGoErctKmxufGqiBK0eFLMF1nCo6WS8A"
+    api_key = "" # Replace with your OpenAI API key
     if not os.getenv(api_key):
         print("Error: OPENAI_API_KEY environment variable not set.")
         sys.exit(1)
 
     openai.api_key = os.getenv(api_key)
 
-    # Load documents
+
     docs = load_corpus(corpus_path)
     print(f"Loaded {len(docs)} documents from {corpus_path}.")
 
-    # Prepare embedding storage
     id_to_embedding = {}
 
-    # Process in batches
     for i in range(0, len(docs), BATCH_SIZE):
         batch = docs[i:i + BATCH_SIZE]
         texts = [d['text'] for d in batch]
         embeddings = embed_texts(texts)
 
-        # Map embeddings back to document IDs
         for j, entry in enumerate(embeddings):
             doc_id = batch[j]['_id']
             id_to_embedding[doc_id] = entry['embedding']
 
         print(f"Processed batch {i // BATCH_SIZE + 1} / {((len(docs)-1) // BATCH_SIZE) + 1}")
 
-    # Save to JSON
+
     with open(output_path, 'w', encoding='utf-8') as fout:
         json.dump(id_to_embedding, fout, ensure_ascii=False)
 

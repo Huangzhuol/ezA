@@ -8,14 +8,14 @@ import openai
 import re
 from openai import OpenAI
 from RAG_Retrieval import ragFunc
-# ========== CONFIGURATION ==========
+
 openai.api_key = "openai_key" # Replace with your OpenAI API key
 Deepseek_key="deepseek_key" # Replace with your DeepSeek key
 DATA_DIR = "./data"
 TOP_K = 5
 
 
-# ========== LOAD DATA ==========
+
 def load_jsonl(filepath):
     with jsonlines.open(filepath) as reader:
         return {item['_id']: item['text'] for item in reader}
@@ -23,13 +23,12 @@ def load_jsonl(filepath):
 corpus = load_jsonl(os.path.join(DATA_DIR, "corpus.jsonl"))
 queries = load_jsonl(os.path.join(DATA_DIR, "queries.jsonl"))
 
-# ========== EMBEDDINGS ==========
+
 model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
 clause_ids = list(corpus.keys())
 clause_texts = list(corpus.values())
 clause_embeddings = model.encode(clause_texts, convert_to_tensor=True)
 
-# ========== GPT-4o UTILS ==========
 def generate_explanation_deepseek(query, clause):
     rag = ragFunc(    corpus_path="maud_corpus.jsonl",
     embedding_path="embeddings.json",
@@ -115,7 +114,6 @@ Rate how well this clause and explanation together answer the query, on a scale 
         print(f"Scoring error: {e}")
         return 1
     
-# ========== MAIN LOOP ==========
 explanations_gpt = []
 explanations_deepseek = []
 
@@ -148,9 +146,9 @@ for qid, query in tqdm(queries.items(), desc="Generating Explanations"):
             "score": score_deepseek
         })
 
-    # break #to do one query
+    
 
-# ========== OUTPUT ==========
+
 pd.DataFrame(explanations_gpt).to_csv("./result/model_data/Dgpt_RAG.csv", index=False)
 print("Saved explanations to acord_explanations_gpt.csv")
 

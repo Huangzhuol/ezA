@@ -9,13 +9,11 @@ import numpy as np
 import openai
 import re
 
-# ========== CONFIGURATION ==========
 openai.api_key = "api-key"
 DATA_DIR = "./acord_data"
 TOP_K = 5  
 USE_BM25 = False  
 
-# ========== LOAD DATA ==========
 def load_jsonl(filepath):
     with jsonlines.open(filepath) as reader:
         return {item['_id']: item['text'] for item in reader}
@@ -23,7 +21,7 @@ def load_jsonl(filepath):
 corpus = load_jsonl(os.path.join(DATA_DIR, "corpus.jsonl"))
 queries = load_jsonl(os.path.join(DATA_DIR, "queries.jsonl"))
 qrels_df = pd.read_csv(os.path.join(DATA_DIR, "qrels/test.tsv"), sep='\\t', names=["query_id", "corpus_id", "score"])
-# ========== EMBEDDINGS ==========
+
 model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
 clause_ids = list(corpus.keys())
 clause_texts = list(corpus.values())
@@ -31,7 +29,6 @@ clause_embeddings = model.encode(clause_texts, convert_to_tensor=True)
 
 id_to_index = {cid: idx for idx, cid in enumerate(clause_ids)}
 
-# ========== RERANKER ==========
 def gpt4o_score(query, clause):
     prompt = f"Query: {query}\nClause: {clause}\nRate the relevance from 1 to 5:"
     try:
@@ -43,19 +40,17 @@ def gpt4o_score(query, clause):
             ],
             temperature=0.0
         )
-        # return int(response.choices[0].message.content.strip())
         content = response.choices[0].message.content.strip()
         match = re.search(r"\b[1-5]\b", content)
         if match:
             return int(match.group(0))
         else:
             print(f"[WARNING] Could not parse score from response: {content}")
-            return 1  # fallback
+            return 1  
     except Exception as e:
         print(f"Error scoring with GPT-4o: {e}")
-        return 1  # fallback score
+        return 1  
 
-# ========== METRICS ==========
 def precision_at_k(preds, truth, k, star_thresh):
     relevant = set(cid for cid, score in truth if float(score) >= star_thresh)
     top_k = preds[:k]
@@ -68,7 +63,6 @@ def ndcg_at_k(preds, truth, k):
     idcg = sum((2**score - 1) / np.log2(idx + 2) for idx, score in enumerate(ideal))
     return dcg / idcg if idcg > 0 else 0
 
-# ========== BATCH EVALUATION ==========
 results = []
 
 for qid, query in tqdm(queries.items(), desc="Evaluating Queries"):

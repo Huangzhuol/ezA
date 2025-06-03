@@ -63,8 +63,6 @@ for i, wedge in enumerate(wedges1):
     )
 
 ax1.set_title('RAG Models', pad=20)
-
-# 5. 绘制Non-RAG饼图（带外部标签）
 ax2 = fig.add_subplot(gs[1, 1])
 wedges2, _ = ax2.pie(
     non_rag_counts,
