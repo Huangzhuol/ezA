@@ -1,4 +1,4 @@
-# Enhancing ACORD with RAG through eepSeek-V3 and ChatGPT-4
+# Enhancing ACORD with RAG through DeepSeek-V3 and ChatGPT-4
 
 This project evaluates how well different LLM-based pipelines retrieve and explain legal contract clauses from the ACORD dataset. It compares various combinations of explanation sources and scorers, both with and without RAG (retrieval-augmented generation).
 
