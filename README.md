@@ -28,7 +28,10 @@ pip install -r requirements.txt
 To generate separate CSV files by running the following code, each file will produce two CSV files, corresponding to the evaluation scores of Chatgpt and Deepseek.Since each of them takes a very long time, we did not use main.py. Instead, we ran them separately. Update key with your openai and deepseek api key in your chosen file.
 
 ```
-python Deepseekexplan.py/DeepseekexplanRAG.py/GPTexplanRAG.py/GPTexplanRAG.py
+python Deepseekexplan.py
+python DeepseekexplanRAG.py
+python GPTexplan.py
+python GPTexplanRAG.py
 ```
 
 Run the analysis function to obtain the distribution graph, as well as the average value, median, mode, standard deviation, and the frequency of scores greater than 4. And the pie chart clearly represents the difference between the presence and absence of the RAG.
